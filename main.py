@@ -65,6 +65,9 @@ def handle_single_comment(_single_comment):
             print("Comment:\n####\n" + comment_body + "\n####\nReply:\n####\n" + reply_body)
             if is_replying() and _single_comment.subreddit.name in get_allowed_subs().split("+"):
                 _single_comment.reply(reply_body)
+            else:
+                print("Reply is forbidden in this subreddit: " + _single_comment.subreddit.name)
+                print(", Or replying is generally forbidden: " + str(is_replying()))
         except Exception as e:
             print("Failed to reply to comment: " + str(e))
     else:
