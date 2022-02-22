@@ -49,6 +49,10 @@ def is_replying():
     return bool(os.getenv("is_replying", False))
 
 
+def get_allowed_subs():
+    return os.getenv("allowed_subs", "").split(",")
+
+
 def handle_single_comment(_single_comment):
     comment_body = _single_comment.body.lower()
     if "protagonist" in comment_body and _single_comment.author.name != "TheProtagonistBot":
@@ -59,7 +63,7 @@ def handle_single_comment(_single_comment):
             else:
                 reply_body = get_random_quote()
             print("Comment:\n####\n" + comment_body + "\n####\nReply:\n####\n" + reply_body)
-            if is_replying():
+            if is_replying() and _single_comment.subreddit.name in get_allowed_subs():
                 _single_comment.reply(reply_body)
         except Exception as e:
             print("Failed to reply to comment: " + str(e))
