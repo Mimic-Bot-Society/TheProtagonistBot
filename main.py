@@ -90,6 +90,10 @@ def handle_rate_limit_exception(_message, _comment):
         thread.start()
 
 
+def is_replied_to_it(_single_comment):
+    return any(reply for reply in _single_comment.replies if reply.author.name == get_bot_username()) is not None
+
+
 def handle_single_comment(_single_comment, _sleep):
     if _sleep != 0:
         time.sleep(_sleep)
@@ -105,15 +109,17 @@ def handle_single_comment(_single_comment, _sleep):
             print(f"{Fore.YELLOW}###")
             print(f"{Fore.GREEN}Reply:")
             print(f"{Fore.BLUE}{reply_body}")
-            if is_replying() and sub_name in get_allowed_subs().split("+"):
+            if is_replying() and sub_name in get_allowed_subs().split("+") and not is_replied_to_it(_single_comment):
                 print(f"Replying to comment: {_single_comment.id}, Wait...{Style.RESET_ALL}")
                 time.sleep(random.randint(1, reply_rate_limit_sleep))
                 _single_comment.reply(reply_body)
                 print(f"{Fore.GREEN}Replied to comment.")
             else:
                 print(f"{Fore.RED}Reply is forbidden in this subreddit: {Fore.CYAN}{sub_name}{Style.RESET_ALL}")
-                print(f"{Fore.RED}, Or replying is generally forbidden:{Style.RESET_ALL}", end='')
+                print(f"{Fore.RED}, Or generally replying allowance is:{Style.RESET_ALL}", end='')
                 print(f"{Fore.CYAN} {is_replying()}{Style.RESET_ALL}")
+                print(f"{Fore.RED}, Or bot already replied to this comment:{Style.RESET_ALL}", end='')
+                print(f"{Fore.CYAN} {is_replied_to_it(_single_comment)}{Style.RESET_ALL}")
         except RedditAPIException as reddit_api_exception:
             message = reddit_api_exception.args[0].message
             print(f"{Fore.RED}Reddit API Exception: {Fore.CYAN}{message}{Style.RESET_ALL}")
