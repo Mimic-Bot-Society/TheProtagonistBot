@@ -1,9 +1,13 @@
 import os
+import random
+import threading
 import time
+import re
 from random import randrange
 
 import praw
 from colorama import init, Fore, Style
+from praw.exceptions import RedditAPIException
 
 reply_rate_limit_sleep = 5
 
@@ -42,7 +46,7 @@ def get_matched_quote(_comment_body):
 
 def handle_comment(_comment):
     replies = _comment.replies
-    handle_single_comment(_comment)
+    handle_single_comment(_comment, 0)
     if len(replies) > 0:
         for comment_replay in replies:
             time.sleep(general_rate_limit_sleep)
@@ -65,7 +69,31 @@ def get_bot_username():
     return os.getenv("username", "TheProtagonistBot")
 
 
-def handle_single_comment(_single_comment):
+def handle_rate_limit_exception(_message, _comment):
+    if "Take a break" in _message:
+        p_seconds = re.compile(r"\d+ seconds", re.IGNORECASE)
+        p_minutes = re.compile(r"\d+ minutes", re.IGNORECASE)
+
+        seconds_match = p_seconds.findall(_message)
+        minutes_match = p_minutes.findall(_message)
+
+        if len(seconds_match) > 0:
+            seconds = int(seconds_match[0].replace("seconds", "").strip())
+        elif len(minutes_match) > 0:
+            seconds = int(minutes_match[0].replace("minutes", "").strip()) * 60
+        else:
+            seconds = 600
+        seconds += random.randint(10, 30)
+
+        print(f"Rate limit exception, sleeping for {seconds} seconds then retrying!")
+        thread = threading.Thread(target=handle_single_comment, args=(_comment, seconds,))
+        thread.start()
+
+
+def handle_single_comment(_single_comment, _sleep):
+    if _sleep != 0:
+        time.sleep(_sleep)
+
     comment_body = _single_comment.body.lower()
     if get_trigger_word() in comment_body and _single_comment.author.name != get_bot_username():
         try:
@@ -79,13 +107,17 @@ def handle_single_comment(_single_comment):
             print(f"{Fore.BLUE}{reply_body}")
             if is_replying() and sub_name in get_allowed_subs().split("+"):
                 print(f"Replying to comment: {_single_comment.id}, Wait...{Style.RESET_ALL}")
-                time.sleep(reply_rate_limit_sleep)
+                time.sleep(random.randint(1, reply_rate_limit_sleep))
                 _single_comment.reply(reply_body)
                 print(f"{Fore.GREEN}Replied to comment.")
             else:
                 print(f"{Fore.RED}Reply is forbidden in this subreddit: {Fore.CYAN}{sub_name}{Style.RESET_ALL}")
                 print(f"{Fore.RED}, Or replying is generally forbidden:{Style.RESET_ALL}", end='')
                 print(f"{Fore.CYAN} {is_replying()}{Style.RESET_ALL}")
+        except RedditAPIException as reddit_api_exception:
+            message = reddit_api_exception.args[0].message
+            print(f"{Fore.RED}Reddit API Exception: {Fore.CYAN}{message}{Style.RESET_ALL}")
+            handle_rate_limit_exception(message, _single_comment)
         except Exception as e:
             print(f"{Fore.RED}Failed to reply to comment: {Fore.CYAN}{str(e)}{Style.RESET_ALL}")
     else:
