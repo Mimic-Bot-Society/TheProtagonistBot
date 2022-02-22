@@ -50,7 +50,7 @@ def is_replying():
 
 
 def get_allowed_subs():
-    return os.getenv("allowed_subs", "").split(",")
+    return os.getenv("allowed_subs", "")
 
 
 def handle_single_comment(_single_comment):
@@ -63,7 +63,7 @@ def handle_single_comment(_single_comment):
             else:
                 reply_body = get_random_quote()
             print("Comment:\n####\n" + comment_body + "\n####\nReply:\n####\n" + reply_body)
-            if is_replying() and _single_comment.subreddit.name in get_allowed_subs():
+            if is_replying() and _single_comment.subreddit.name in get_allowed_subs().split("+"):
                 _single_comment.reply(reply_body)
         except Exception as e:
             print("Failed to reply to comment: " + str(e))
@@ -82,7 +82,7 @@ reddit = praw.Reddit(
     password=os.getenv("password")
 )
 
-tenet = reddit.subreddit("tenet+test")
+tenet = reddit.subreddit(get_allowed_subs())
 
 for comment in tenet.stream.comments():
     time.sleep(0.1)
