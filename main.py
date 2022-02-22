@@ -46,7 +46,7 @@ def handle_comment(_comment):
 
 
 def is_replying():
-    return bool(os.getenv("is_replying", False))
+    return os.getenv("is_replying", False) == "True"
 
 
 def get_allowed_subs():
