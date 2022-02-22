@@ -37,6 +37,13 @@ ammo:I've seen this type of ammunition before.
 take a child hostage:If I had to.
 take a hostage:If I had to.
 do you drink:Well I prefer soda water.
+vodka:Well I prefer soda water.
+beer:Well I prefer soda water.
+wine:Well I prefer soda water.
+whiskey:Well I prefer soda water.
+rum:Well I prefer soda water.
+tequila:Well I prefer soda water.
+coke:Well I prefer soda water.
 parachuting:I broke an ankle during basic training.
 bungee-jumpable:I don't think bungee-jumpable is a word.
 ukraine:I was almost taken out by a very unusual type of ammunition in Ukraine.
@@ -58,10 +65,10 @@ restaurant:I ordered my hot sauce an hour ago.
 sriracha:I ordered my hot sauce an hour ago.
 guess:Guessing?
 nuclear:Temporal.
-time travel:No Technology that can invert object's entropy.
+time travel:No, Technology that can invert object's entropy.
 lie:Lying is standard operating procedure.
 lying:Lying is standard operating procedure.
 truth:Lying is standard operating procedure.
 optimistically:Pessimistically?
-how did you know:Posterity.
-how do you know:Posterity.
+did you know:Posterity.
+do you know:Posterity.

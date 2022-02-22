@@ -3,6 +3,7 @@ import time
 from random import randrange
 
 import praw
+from colorama import init, Fore, Style
 
 reply_rate_limit_sleep = 5
 
@@ -53,26 +54,42 @@ def is_replying():
 
 
 def get_allowed_subs():
-    return os.getenv("allowed_subs", "")
+    return os.getenv("allowed_subs", "test")
+
+
+def get_trigger_word():
+    return os.getenv("trigger_word", "protagonist")
+
+
+def get_bot_username():
+    return os.getenv("username", "TheProtagonistBot")
 
 
 def handle_single_comment(_single_comment):
     comment_body = _single_comment.body.lower()
-    if "protagonist" in comment_body and _single_comment.author.name != "TheProtagonistBot":
+    if get_trigger_word() in comment_body and _single_comment.author.name != get_bot_username():
         try:
             reply_body = get_reply_body(comment_body)
-            print(f"Comment:\n####\n{comment_body}\n####\nReply draft:\n####\n{reply_body}")
-            if is_replying() and _single_comment.subreddit.display_name in get_allowed_subs().split("+"):
-                print(f"Replying to comment: {_single_comment.id}, Wait...")
+            sub_name = _single_comment.subreddit.display_name
+            print(f"{Fore.GREEN}Comment:")
+            print(f"{Fore.YELLOW}###")
+            print(f"{Fore.BLUE}{comment_body}")
+            print(f"{Fore.YELLOW}###")
+            print(f"{Fore.GREEN}Reply:")
+            print(f"{Fore.BLUE}{reply_body}")
+            if is_replying() and sub_name in get_allowed_subs().split("+"):
+                print(f"Replying to comment: {_single_comment.id}, Wait...{Style.RESET_ALL}")
                 time.sleep(reply_rate_limit_sleep)
                 _single_comment.reply(reply_body)
+                print(f"{Fore.GREEN}Replied to comment.")
             else:
-                print(f"Reply is forbidden in this subreddit: {_single_comment.subreddit.display_name}")
-                print(f", Or replying is generally forbidden: {str(is_replying())}")
+                print(f"{Fore.RED}Reply is forbidden in this subreddit: {Fore.CYAN}{sub_name}{Style.RESET_ALL}")
+                print(f"{Fore.RED}, Or replying is generally forbidden:{Style.RESET_ALL}", end='')
+                print(f"{Fore.CYAN} {is_replying()}{Style.RESET_ALL}")
         except Exception as e:
-            print(f"Failed to reply to comment: {str(e)}")
+            print(f"{Fore.RED}Failed to reply to comment: {Fore.CYAN}{str(e)}{Style.RESET_ALL}")
     else:
-        print(f"Invalid comment: {_single_comment.id}")
+        print(f"{Fore.RED}Invalid comment: {Fore.CYAN}{_single_comment.id}{Style.RESET_ALL}")
 
 
 def get_reply_body(comment_body):
@@ -84,9 +101,16 @@ def get_reply_body(comment_body):
     return reply_body
 
 
+init()
+
+print(f"{Fore.YELLOW}Starting bot...")
+print(f"Trigger word: {Fore.GREEN}{get_trigger_word()}")
+
+print(f"{Fore.YELLOW}Getting quotes...")
 quotes_list = get_quotes_list()
 quotes_dict = get_quote_dict()
 
+print(f"{Fore.YELLOW}Getting reddit instance... for user: {Fore.GREEN}{get_bot_username()}")
 reddit = praw.Reddit(
     client_id=os.getenv("client_id"),
     client_secret=os.getenv("client_secret"),
@@ -95,8 +119,10 @@ reddit = praw.Reddit(
     password=os.getenv("password")
 )
 
-tenet = reddit.subreddit(get_allowed_subs())
+print(f"{Fore.YELLOW}Getting subreddits...")
+subs = reddit.subreddit(get_allowed_subs())
 
-for comment in tenet.stream.comments():
+print(f"{Fore.YELLOW}Getting comments...{Style.RESET_ALL}")
+for comment in subs.stream.comments():
     time.sleep(general_rate_limit_sleep)
     handle_comment(comment)
