@@ -1,10 +1,12 @@
-import praw
-import time
 import os
-
+import time
 from random import randrange
 
-from praw.exceptions import RedditAPIException
+import praw
+
+reply_rate_limit_sleep = 5
+
+general_rate_limit_sleep = 0.5
 
 
 def read_file_contents(_file_name):
@@ -42,6 +44,7 @@ def handle_comment(_comment):
     handle_single_comment(_comment)
     if len(replies) > 0:
         for comment_replay in replies:
+            time.sleep(general_rate_limit_sleep)
             handle_comment(comment_replay)
 
 
@@ -57,21 +60,28 @@ def handle_single_comment(_single_comment):
     comment_body = _single_comment.body.lower()
     if "protagonist" in comment_body and _single_comment.author.name != "TheProtagonistBot":
         try:
-            match = get_matched_quote(comment_body)
-            if match is not None:
-                reply_body = quotes_dict[match]
-            else:
-                reply_body = get_random_quote()
-            print("Comment:\n####\n" + comment_body + "\n####\nReply:\n####\n" + reply_body)
+            reply_body = get_reply_body(comment_body)
+            print(f"Comment:\n####\n{comment_body}\n####\nReply draft:\n####\n{reply_body}")
             if is_replying() and _single_comment.subreddit.display_name in get_allowed_subs().split("+"):
+                print(f"Replying to comment: {_single_comment.id}, Wait...")
+                time.sleep(reply_rate_limit_sleep)
                 _single_comment.reply(reply_body)
             else:
-                print("Reply is forbidden in this subreddit: " + _single_comment.subreddit.display_name)
-                print(", Or replying is generally forbidden: " + str(is_replying()))
+                print(f"Reply is forbidden in this subreddit: {_single_comment.subreddit.display_name}")
+                print(f", Or replying is generally forbidden: {str(is_replying())}")
         except Exception as e:
-            print("Failed to reply to comment: " + str(e))
+            print(f"Failed to reply to comment: {str(e)}")
     else:
-        print("Invalid comment: " + _single_comment.id)
+        print(f"Invalid comment: {_single_comment.id}")
+
+
+def get_reply_body(comment_body):
+    match = get_matched_quote(comment_body)
+    if match is not None:
+        reply_body = quotes_dict[match]
+    else:
+        reply_body = get_random_quote()
+    return reply_body
 
 
 quotes_list = get_quotes_list()
@@ -88,5 +98,5 @@ reddit = praw.Reddit(
 tenet = reddit.subreddit(get_allowed_subs())
 
 for comment in tenet.stream.comments():
-    time.sleep(0.1)
+    time.sleep(general_rate_limit_sleep)
     handle_comment(comment)
