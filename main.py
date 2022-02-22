@@ -1,7 +1,10 @@
 import praw
 import time
 import os
+
 from random import randrange
+
+from praw.exceptions import RedditAPIException
 
 
 def read_file_contents(_file_name):
@@ -43,7 +46,7 @@ def handle_comment(_comment):
 
 
 def is_replying():
-    return os.getenv("is_replying", False)
+    return bool(os.getenv("is_replying", False))
 
 
 def handle_single_comment(_single_comment):
