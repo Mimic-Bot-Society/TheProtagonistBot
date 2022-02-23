@@ -112,7 +112,8 @@ def handle_single_comment(_single_comment, _sleep):
             print(f"{Fore.YELLOW}###")
             print(f"{Fore.GREEN}Reply:")
             print(f"{Fore.BLUE}{reply_body}")
-            if is_replying() and sub_name in get_allowed_subs().split("+") and not is_replied_to_it(_single_comment):
+            already_replied = is_replied_to_it(_single_comment.replies)
+            if is_replying() and sub_name in get_allowed_subs().split("+") and not already_replied:
                 print(f"Replying to comment: {_single_comment.id}, Wait...{Style.RESET_ALL}")
                 time.sleep(random.randint(1, reply_rate_limit_sleep))
                 _single_comment.reply(reply_body)
