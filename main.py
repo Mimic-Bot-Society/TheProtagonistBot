@@ -45,7 +45,8 @@ def get_matched_quote(_comment_body):
 
 
 def handle_comment(_comment):
-    replies = _comment.replies
+    _comment.replies.replace_more(limit=None)
+    replies = _comment.replies.list()
     handle_single_comment(_comment, 0)
     if len(replies) > 0:
         for comment_replay in replies:
@@ -112,7 +113,7 @@ def handle_single_comment(_single_comment, _sleep):
             print(f"{Fore.YELLOW}###")
             print(f"{Fore.GREEN}Reply:")
             print(f"{Fore.BLUE}{reply_body}")
-            already_replied = is_replied_to_it(_single_comment.replies)
+            already_replied = is_replied_to_it(_single_comment.replies.list())
             if is_replying() and sub_name in get_allowed_subs().split("+") and not already_replied:
                 print(f"Replying to comment: {_single_comment.id}, Wait...{Style.RESET_ALL}")
                 time.sleep(random.randint(1, reply_rate_limit_sleep))
@@ -120,7 +121,8 @@ def handle_single_comment(_single_comment, _sleep):
                 print(f"{Fore.GREEN}Replied to comment.")
             else:
                 print(f"{Fore.RED}Reply is forbidden in this subreddit: {Fore.CYAN}{sub_name}{Style.RESET_ALL}")
-                print(f"{Fore.RED}, Or generally replying allowance is:{Style.RESET_ALL}", end='')
+                print(f"{Fore.RED}Because:")
+                print(f"{Fore.RED}generally replying allowance is:{Style.RESET_ALL}", end='')
                 print(f"{Fore.CYAN} {is_replying()}{Style.RESET_ALL}")
                 print(f"{Fore.RED}, Or bot already replied to this comment:{Style.RESET_ALL}", end='')
                 print(f"{Fore.CYAN} {already_replied}{Style.RESET_ALL}")
@@ -167,4 +169,5 @@ subs = reddit.subreddit(get_allowed_subs())
 print(f"{Fore.YELLOW}Getting comments...{Style.RESET_ALL}")
 for comment in subs.stream.comments():
     time.sleep(general_rate_limit_sleep)
+    comment.refresh()
     handle_comment(comment)
