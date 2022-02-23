@@ -92,7 +92,7 @@ def handle_rate_limit_exception(_message, _comment):
 
 def is_replied_to_it(_replies):
     if len(_replies) > 0:
-        return any(reply for reply in _replies if reply.author.name == get_bot_username()) is not None
+        return any(reply for reply in _replies if reply.author.name == get_bot_username())
     else:
         return False
 
@@ -123,7 +123,7 @@ def handle_single_comment(_single_comment, _sleep):
                 print(f"{Fore.RED}, Or generally replying allowance is:{Style.RESET_ALL}", end='')
                 print(f"{Fore.CYAN} {is_replying()}{Style.RESET_ALL}")
                 print(f"{Fore.RED}, Or bot already replied to this comment:{Style.RESET_ALL}", end='')
-                print(f"{Fore.CYAN} {is_replied_to_it(_single_comment)}{Style.RESET_ALL}")
+                print(f"{Fore.CYAN} {already_replied}{Style.RESET_ALL}")
         except RedditAPIException as reddit_api_exception:
             message = reddit_api_exception.args[0].message
             print(f"{Fore.RED}Reddit API Exception: {Fore.CYAN}{message}{Style.RESET_ALL}")
