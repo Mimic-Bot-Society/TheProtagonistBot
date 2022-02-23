@@ -90,8 +90,11 @@ def handle_rate_limit_exception(_message, _comment):
         thread.start()
 
 
-def is_replied_to_it(_single_comment):
-    return any(reply for reply in _single_comment.replies if reply.author.name == get_bot_username()) is not None
+def is_replied_to_it(_replies):
+    if len(_replies) > 0:
+        return any(reply for reply in _replies if reply.author.name == get_bot_username()) is not None
+    else:
+        return False
 
 
 def handle_single_comment(_single_comment, _sleep):
