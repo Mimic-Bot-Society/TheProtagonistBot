@@ -72,23 +72,26 @@ def get_bot_username():
 
 def handle_rate_limit_exception(_message, _comment):
     if "Take a break" in _message:
-        p_seconds = re.compile(r"\d+ seconds", re.IGNORECASE)
-        p_minutes = re.compile(r"\d+ minutes", re.IGNORECASE)
-
-        seconds_match = p_seconds.findall(_message)
-        minutes_match = p_minutes.findall(_message)
-
-        if len(seconds_match) > 0:
-            seconds = int(seconds_match[0].replace("seconds", "").strip())
-        elif len(minutes_match) > 0:
-            seconds = int(minutes_match[0].replace("minutes", "").strip()) * 60
-        else:
-            seconds = 600
-        seconds += random.randint(10, 30)
+        seconds = calculate_break_time(_message)
 
         print(f"Rate limit exception, sleeping for {seconds} seconds then retrying!")
         thread = threading.Thread(target=handle_single_comment, args=(_comment, seconds,))
         thread.start()
+
+
+def calculate_break_time(_message):
+    p_seconds = re.compile(r"\d+ seconds", re.IGNORECASE)
+    p_minutes = re.compile(r"\d+ minutes", re.IGNORECASE)
+    seconds_match = p_seconds.findall(_message)
+    minutes_match = p_minutes.findall(_message)
+    if len(seconds_match) > 0:
+        seconds = int(seconds_match[0].replace("seconds", "").strip())
+    elif len(minutes_match) > 0:
+        seconds = int(minutes_match[0].replace("minutes", "").strip()) * 60
+    else:
+        seconds = 600
+    seconds += random.randint(10, 30)
+    return seconds
 
 
 def is_replied_to_it(_replies):
@@ -111,11 +114,11 @@ def handle_single_comment(_single_comment, _sleep):
             print(f"{Fore.YELLOW}###")
             print(f"{Fore.BLUE}{comment_body}")
             print(f"{Fore.YELLOW}###")
-            print(f"{Fore.GREEN}Reply:")
-            print(f"{Fore.BLUE}{reply_body}")
             already_replied = is_replied_to_it(_single_comment.replies.list())
             if is_replying() and sub_name in get_allowed_subs().split("+") and not already_replied:
                 print(f"Replying to comment: {_single_comment.id}, Wait...{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}Reply:")
+                print(f"{Fore.BLUE}{reply_body}")
                 time.sleep(random.randint(1, reply_rate_limit_sleep))
                 _single_comment.reply(reply_body)
                 print(f"{Fore.GREEN}Replied to comment.")
