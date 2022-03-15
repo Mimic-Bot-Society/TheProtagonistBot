@@ -9,7 +9,8 @@ inception:Stay.
 cooper:Stay.
 i'm leaving:Stay.
 kill:You don't have to kill these people.
-afterlife:I resign.
+work: I resign.
+job: I resign.
 suicide:The suicide pills are fake.
 pill:The suicide pills are fake.
 aim it:It's empty
@@ -47,18 +48,21 @@ coke:Well, I prefer soda water.
 parachuting:I broke an ankle during basic training.
 bungee-jumpable:I don't think bungee-jumpable is a word.
 ukraine:I was almost taken out by a very unusual type of ammunition in Ukraine.
-opera house:I was almost taken out by a very unusual type of ammunition in Ukraine.
+kiev:I was almost taken out by a very unusual type of ammunition in Ukraine.
+opera:I was almost taken out by a very unusual type of ammunition in Ukraine.
 assumption:Deduction.
 negotiate:I'm not the man they send to negotiate.
 deal:I'm not the man they send to negotiate.
 andrei sator:The Russian oligarch.
+putin:The Russian oligarch.
 mi6:Is it safe to involve British Intelligence?
 presume:Presume away.
-waiter:No just pass on the order.
+waiter:No, just pass on the order.
 secret city:Closed cities not shown on maps. Built around sensitive industries.
 secret cities:Closed cities not shown on maps. Built around sensitive industries.
 stalsk:Closed cities not shown on maps. Built around sensitive industries.
 tailor:You British don't have a monopoly on snobbery you know.
+suit:You British don't have a monopoly on snobbery you know.
 sauce:I ordered my hot sauce an hour ago.
 chilli:I ordered my hot sauce an hour ago.
 restaurant:I ordered my hot sauce an hour ago.
@@ -73,3 +77,4 @@ optimistically:Pessimistically?
 did you know:Posterity.
 do you know:Posterity.
 mission accomplished:You used me.
+you can't:You can if you have to.
