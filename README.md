@@ -1,4 +1,4 @@
-# tenet_bot
+# TheProtagonistBot
 
 [![Reddit User Karma](https://img.shields.io/reddit/user-karma/combined/TheProtagonistBot?style=social)](https://reddit.com/user/TheProtagonistBot)
 
