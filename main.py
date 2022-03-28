@@ -15,9 +15,8 @@ general_rate_limit_sleep = 0.5
 
 
 def read_file_contents(_file_name):
-    file = open(_file_name, "r")
-    file_contents = file.read()
-    file.close()
+    with open(_file_name, "r") as file:
+        file_contents = file.read()
     return file_contents
 
 
@@ -141,11 +140,7 @@ def handle_single_comment(_single_comment, _sleep):
 
 def get_reply_body(comment_body):
     match = get_matched_quote(comment_body)
-    if match is not None:
-        reply_body = quotes_dict[match]
-    else:
-        reply_body = get_random_quote()
-    return reply_body
+    return quotes_dict[match] if match is not None else get_random_quote()
 
 
 init()
