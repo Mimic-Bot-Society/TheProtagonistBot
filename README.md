@@ -11,7 +11,7 @@ the [![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscriber
 subreddit.
 
 Currently, bot is powered using
-**Python 3.9.1** and the **[praw](https://praw.readthedocs.io/en/latest/)** library which is running in a free tier
+**Python 3.10.6** and the **[praw](https://praw.readthedocs.io/en/latest/)** library which is running in a free tier
 heroku dyno.
 
 The bot use two types of quotes, [one](https://github.com/yamin8000/tenet_bot/blob/master/quotes_dict)
